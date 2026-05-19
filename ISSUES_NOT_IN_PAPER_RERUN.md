@@ -38,28 +38,6 @@
 
 ---
 
-## 二、错误类型一：外部 API / 密钥硬约束导致整条应用子实验无法执行
-
-**总体说明**：论文讨论的是应用在有模型服务时的 **输出形态** 问题；这里的问题是 **子进程根本没拿到合法后端**（缺 `GROQ_API_KEY`），属于 **运行环境未满足上游脚本假设**，论文 **不会** 把「缺 API Key」当作与 format/syntax/repetition 并列的研究对象。
-
-### 案例 1：BabyAGI + Taskmaster-1 批次（`--limit 2` 中的 2 条）
-
-- **开源项目链接**：[BabyAGI（原版概念）](https://github.com/yoheinakajima/babyagi)；本仓库实际调用的是 `Comfrey_2026-main/real_apps/babyagi_archive/babyagi_groq.py`（Groq 专用 fork，无独立对外「产品」主页时以原版仓库作背景）。调用 Groq API 需 [Groq Console](https://console.groq.com/keys) 申请密钥。  
-- **使用数据集**：`taskmaster1.jsonl`（Taskmaster-1 对话任务片段，经 `outputs/dataset_summary.csv` 解析路径）。  
-- **运行命令**（在仓库根目录 `comfrey-paper-repro-work` 下）：
-
-```powershell
-python scripts/run_real_apps_experiment.py --data-summary outputs/dataset_summary.csv --limit 2 --out member1_outputs/real_apps_rerun --llm-provider ollama --model qwen2.5:3b
-```
-
-- **输出目录**：`member1_outputs/real_apps_rerun/`  
-- **最后输出**（终端 JSON 摘要）：`app_success` **6**，`app_failed` **2**；`failure_breakdown`：`missing_GROQ_API_KEY (BabyAGI fork requires Groq)` **2** 次。完整指标文件：`member1_outputs/real_apps_rerun/app_metrics.json`。  
-- **观察到的问题**：两条 BabyAGI 用例未产生模型输出；`app_raw_outputs.jsonl` 中对应行的 `app_error` 为字符串 **`missing_GROQ_API_KEY (BabyAGI fork requires Groq)`**（已对 `babyagi:taskmaster1:0` 与 `babyagi:taskmaster1:1` 核实）。  
-- **与论文口径的区别**：这是 **复现脚本与上游 fork 的硬绑定**（仅 Groq），不是论文中在「模型已可用」前提下讨论的输出格式/语法/重复问题。  
-- **完整日志路径**：逐条原始与中间结果见 `member1_outputs/real_apps_rerun/app_raw_outputs.jsonl`、`app_test_cases.jsonl`（文件较大，检索 `babyagi` 即可定位）。
-
----
-
 ## 三、错误类型二：本地导出数据与「论文级严格输入」或上游镜像不完全一致
 
 **总体说明**：论文可能引用某基准名（如 MultiWOZ、BBC 新闻正文等）；本仓库为可复现与体量控制，采用 **HF 上的替代打包或子集**，属于 **数据工程上的差异**。论文 **通常不会** 把「用了 HF 替代镜像」单独列为一种应用输出错误。
