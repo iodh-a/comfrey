@@ -63,7 +63,12 @@ python scripts/prepare_datasets.py --limit 300 --out datasets/processed --fail-l
 
 - **开源项目链接**：[PaperQA / paper-qa](https://github.com/Future-House/paper-qa)（本批真实子实验中 PaperQA 使用该库路径：`Comfrey_2026-main/real_apps/_paper_candidates/paper-qa`）。  
 - **使用数据集**：`narrativeqa.jsonl` 中前两行（`paperqa:narrativeqa.jsonl:0` / `:1`）。  
-- **运行命令**：python scripts/run_real_apps_experiment.py --data-summary outputs/dataset_summary.csv --limit 2 --out member1_outputs/real_apps_rerun --llm-provider ollama --model qwen2.5:3b  
+- **运行命令**：
+
+```powershell
+  python scripts/run_real_apps_experiment.py --data-summary outputs/dataset_summary.csv --limit 2 --out member1_outputs/real_apps_rerun --llm-provider ollama --model qwen2.5:3b
+```
+
 - **输出目录**：`member1_outputs/real_apps_rerun/`。  
 - **最后输出**：PaperQA 两条在 `app_metrics.json` 中计入成功；`app_raw_outputs.jsonl` 内 `context` 字段开头可见 **`ï»¿`**（UTF-8 BOM），属 **导出/拼接文本时的编码残留**。  
 - **观察到的问题**：对 RAG/解析可能引入 **额外噪声**；论文一般不会把「BOM 字符」列为与三类输出错误并列的研究对象。  
